@@ -1,16 +1,16 @@
-IDIR =./include
+IDIR =include
 CC=g++ -std=c++17
 CFLAGS=-I$(IDIR) -lSDL2main -lSDL2 -lSDL2_image
 
 ODIR=obj
-LDIR =./lib
+LDIR=lib
 
-SRCR =./src
+SRCR=src
 
-_DEPS = graphics.hpp game.hpp input.hpp sprite.hpp helpers.hpp
+_DEPS = $(notdir $(shell find $(IDIR) -name '*.hpp'))
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
-_OBJ = graphics.o game.o input.o main.o sprite.o helpers.o
+SOURCES = $(notdir $(shell find $(SRCR) -name '*.cpp'))
+_OBJ = $(SOURCES:%.cpp=%.o)
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SRCR)/%.cpp $(DEPS)

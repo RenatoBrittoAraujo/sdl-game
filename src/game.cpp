@@ -20,6 +20,7 @@ Game::~Game()
 
 }
 #include <iostream>
+#include <unistd.h>
 void Game::gameLoop()
 {
     Graphics graphics;
@@ -27,11 +28,14 @@ void Game::gameLoop()
     Input input;
 
     try {
-        this->_player = Sprite(graphics, "./resources/char.png", 0, 0, 16, 16, 100 ,100);
+        this->_player = AnimatedSprite(graphics, "./resources/char.png", 0, 0, 16, 16, 100 ,10, 100);
     } catch (const char * msg) {
         std::cout<<msg<<std::endl<<"ABORTING..."<<std::endl;
         return;
     }
+
+    this->_player.setupAnimation();
+    this->_player.playAnimation("runleft");
 
     int LAST_UPDATE_TIME = SDL_GetTicks();
 
@@ -65,6 +69,8 @@ void Game::gameLoop()
         this->update(std::min(timeElapsed, MAX_FRAME_TIME));
 
         LAST_UPDATE_TIME = CURRENT_TIME;
+
+        usleep(10000);
     }
 }
 
@@ -77,5 +83,5 @@ void Game::draw(Graphics &graphics)
 
 void Game::update(float time)
 {
-
+    this->_player.update(time);
 }
