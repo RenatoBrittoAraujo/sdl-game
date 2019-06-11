@@ -1,6 +1,8 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include "sprite.hpp"
+
 class Graphics;
 
 class Game
@@ -12,6 +14,8 @@ private:
     void gameLoop();
     void draw(Graphics & graphics);
     void update(float time);
+
+    Sprite _player;
 };
 
 #endif

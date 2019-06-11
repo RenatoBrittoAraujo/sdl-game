@@ -19,17 +19,26 @@ Game::~Game()
 {
 
 }
-
+#include <iostream>
 void Game::gameLoop()
 {
     Graphics graphics;
     SDL_Event event;
     Input input;
 
+    try {
+        this->_player = Sprite(graphics, "./resources/char.png", 0, 0, 16, 16, 100 ,100);
+    } catch (const char * msg) {
+        std::cout<<msg<<std::endl<<"ABORTING..."<<std::endl;
+        return;
+    }
+
     int LAST_UPDATE_TIME = SDL_GetTicks();
 
     while(true)
     {
+        draw(graphics);
+        
         if(SDL_PollEvent(&event))
         {
             if(event.type == SDL_QUIT)
@@ -61,7 +70,9 @@ void Game::gameLoop()
 
 void Game::draw(Graphics &graphics)
 {
-
+    graphics.clear();
+    this->_player.draw(graphics, 100, 100);
+    graphics.flip();
 }
 
 void Game::update(float time)
