@@ -42,7 +42,6 @@ void Graphics::flip()
 
 void Graphics::clear()
 {
-    // SDL_SetRenderDrawColor(this->_renderer, 255, 0, 0, 255);
     SDL_RenderClear(this->_renderer);
 }
 

@@ -27,50 +27,51 @@ void Game::gameLoop()
     SDL_Event event;
     Input input;
 
+    std::cout<<"[CONTEXT] Running main loop"<<std::endl;
+
     try {
-        this->_player = AnimatedSprite(graphics, "./resources/char.png", 0, 0, 16, 16, 100 ,10, 100);
-    } catch (const char * msg) {
-        std::cout<<msg<<std::endl<<"ABORTING..."<<std::endl;
-        return;
-    }
 
-    this->_player.setupAnimation();
-    this->_player.playAnimation("runleft");
+        this->_player = AnimatedSprite(graphics, "./resources/char.png", 0, 0, 16, 16, 100, 100, 100);
+        this->_player.setupAnimation();
+        this->_player.playAnimation("RunRight");
 
-    int LAST_UPDATE_TIME = SDL_GetTicks();
-
-    while(true)
-    {
-        draw(graphics);
-        
-        if(SDL_PollEvent(&event))
+        int LAST_UPDATE_TIME = SDL_GetTicks();
+        while(true)
         {
-            if(event.type == SDL_QUIT)
+            draw(graphics);
+            
+            if(SDL_PollEvent(&event))
             {
+                if(event.type == SDL_QUIT)
+                {
+                    return;
+                }
+                else if(event.type == SDL_KEYDOWN)
+                {
+                    if(event.key.repeat == 0)
+                        input.keyDownEvent(event);
+                }
+                else if(event.type == SDL_KEYUP)
+                {
+                    input.keyUpEvent(event);
+                }
+            }
+            if(input.wasKeyPressed(SDL_SCANCODE_ESCAPE))
                 return;
-            }
-            else if(event.type == SDL_KEYDOWN)
-            {
-                if(event.key.repeat == 0)
-                    input.keyDownEvent(event);
-            }
-            else if(event.type == SDL_KEYUP)
-            {
-                input.keyUpEvent(event);
-            }
+
+            const int CURRENT_TIME = SDL_GetTicks();
+
+            int timeElapsed = CURRENT_TIME - LAST_UPDATE_TIME;
+
+            this->update(std::min(timeElapsed, MAX_FRAME_TIME));
+
+            LAST_UPDATE_TIME = CURRENT_TIME;
         }
-        if(input.wasKeyPressed(SDL_SCANCODE_ESCAPE))
-            return;
 
-        const int CURRENT_TIME = SDL_GetTicks();
+    } catch (const char * errorString) {
 
-        int timeElapsed = CURRENT_TIME - LAST_UPDATE_TIME;
+        std::cout<<"[ERROR] " + (std::string) errorString<<std::endl<<"    Aborting..."<<std::endl;
 
-        this->update(std::min(timeElapsed, MAX_FRAME_TIME));
-
-        LAST_UPDATE_TIME = CURRENT_TIME;
-
-        usleep(10000);
     }
 }
 

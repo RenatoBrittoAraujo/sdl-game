@@ -21,7 +21,7 @@ void AnimatedSprite::addAnimation(int frames, int x, int y, std::string name, in
     std::vector<SDL_Rect> rectangles;
     for(int i = 0; i < frames; i++)
     {
-        SDL_Rect newRect = { (i * x) * width, y, width, height };
+        SDL_Rect newRect = { (i + x) * width, y, width, height };
         rectangles.push_back(newRect);
     }
     this->_animations.insert({ name, rectangles });
@@ -36,6 +36,10 @@ void AnimatedSprite::resetAnimations()
 
 void AnimatedSprite::playAnimation(std::string animation, bool once)
 {
+    if(!_animations.count(animation))
+    {
+        throw "Invalid animation type";
+    }
     this->_currentAnimationOnce = once;
     if(this->_currentAnimation != animation)
     {
@@ -55,13 +59,14 @@ void AnimatedSprite::stopAnimation()
     this->_frameIndex = 0;
     this->animationOnce(this->_currentAnimation);
 }
-
+#include <iostream>
 void AnimatedSprite::update(int elapsedTime)
 {
     Sprite::update();
     this->_timeElapsed += elapsedTime;
     if(this->_timeElapsed > this->_timeToUpdate)
     {
+        this->_timeElapsed -= this->_timeToUpdate;
         if(_frameIndex < this->_animations[this->_currentAnimation].size() - 1)
         {
             this->_frameIndex++;
@@ -99,5 +104,6 @@ void AnimatedSprite::animationOnce(std::string currentAnimation)
 
 void AnimatedSprite::setupAnimation()
 {
-    this->addAnimation(3, 0, 0, "runleft", 16, 16, Vector2(0,0));
+    this->addAnimation(3, 0, 0, "RunLeft", 16, 16, Vector2(0,0));
+    this->addAnimation(3, 0, 16, "RunRight", 16, 16, Vector2(0,0));
 }
