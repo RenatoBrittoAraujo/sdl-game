@@ -17,7 +17,6 @@ public:
     void playAnimation(std::string, bool once = false);
     void update(int elapsedTime);
     void draw(Graphics & graphics, int x, int y);
-    virtual void setupAnimation();
 
 protected:
     double _timeToUpdate;
@@ -32,7 +31,9 @@ protected:
 
     void setVisible(bool visible);
 
-    virtual void animationOnce(std::string currentAnimation);    
+    virtual void animationDone(std::string currentAnimation) = 0;    
+    
+    virtual void setupAnimation() = 0;
 
 private:
     std::map< std::string, std::vector<SDL_Rect>  > _animations;

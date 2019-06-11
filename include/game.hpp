@@ -1,7 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
-#include "animatedSprite.hpp"
+#include "player.hpp"
 
 class Graphics;
 
@@ -15,7 +15,7 @@ private:
     void draw(Graphics & graphics);
     void update(float time);
 
-    AnimatedSprite _player;
+    Player _player;
 };
 
 #endif
