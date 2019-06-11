@@ -15,8 +15,14 @@ public:
 
     virtual void animationDone(std::string currentAnimation);
     virtual void setupAnimation();
-private:
 
+    void moveLeft();
+    void moveRight();
+    void stopMoving();
+
+private:
+    float _dx, _dy;
+    Direction _facing;
 };
 
 #endif

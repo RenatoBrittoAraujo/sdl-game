@@ -56,7 +56,22 @@ void Game::gameLoop()
                 }
             }
             if(input.wasKeyPressed(SDL_SCANCODE_ESCAPE))
+            {
                 return;
+            }
+            else if(input.isKeyHeld(SDL_SCANCODE_LEFT))
+            {
+                this->_player.moveLeft();
+            }
+            else if(input.isKeyHeld(SDL_SCANCODE_RIGHT))
+            {
+                this->_player.moveRight();
+            }
+            
+            if(!input.isKeyHeld(SDL_SCANCODE_RIGHT) and !input.isKeyHeld(SDL_SCANCODE_LEFT))
+            {
+                this->_player.stopMoving();
+            }
 
             const int CURRENT_TIME = SDL_GetTicks();
 
