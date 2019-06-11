@@ -38,7 +38,7 @@ void AnimatedSprite::playAnimation(std::string animation, bool once)
 {
     if(!_animations.count(animation))
     {
-        throw "Invalid animation type";
+        throw "Failed at fiding animation type '" + animation + "'";
     }
     this->_currentAnimationOnce = once;
     if(this->_currentAnimation != animation)
@@ -58,7 +58,7 @@ void AnimatedSprite::stopAnimation()
 {
     this->_frameIndex = 0;
 }
-#include <iostream>
+
 void AnimatedSprite::update(int elapsedTime)
 {
     Sprite::update();

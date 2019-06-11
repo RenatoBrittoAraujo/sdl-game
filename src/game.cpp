@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <iostream>
+#include <unistd.h>
 
 #include "game.hpp"
 #include "graphics.hpp"
@@ -20,8 +22,6 @@ Game::~Game()
 {
 
 }
-#include <iostream>
-#include <unistd.h>
 void Game::gameLoop()
 {
     Graphics graphics;
@@ -33,6 +33,7 @@ void Game::gameLoop()
     try {
 
         this->_player = Player(graphics, 100, 100);
+        this->_level = Level("map 1", Vector2(100, 100), graphics);
 
         int LAST_UPDATE_TIME = SDL_GetTicks();
         while(true)
@@ -80,6 +81,8 @@ void Game::gameLoop()
             this->update(std::min(timeElapsed, MAX_FRAME_TIME));
 
             LAST_UPDATE_TIME = CURRENT_TIME;
+
+            usleep(1);
         }
 
     } catch (const char * errorString) {
@@ -89,14 +92,20 @@ void Game::gameLoop()
     }
 }
 
+// ORDER MATTERS ON DRAWING
+
 void Game::draw(Graphics &graphics)
 {
     graphics.clear();
+    
+    this->_level.draw(graphics);
     this->_player.draw(graphics);
+    
     graphics.flip();
 }
 
 void Game::update(float time)
 {
+    this->_level.update(time);
     this->_player.update(time);
 }

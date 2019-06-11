@@ -18,7 +18,7 @@ Sprite::Sprite(Graphics & graphics, const std::string & path, int sourceX, int s
     this->_spriteSheet = SDL_CreateTextureFromSurface(graphics.getRenderer(), graphics.loadImage(path));
     if(_spriteSheet == NULL)
     {
-        throw "File not found at sprite level";
+        throw "Failed at creating surface texture from path '" + path + "'";
     }
 }
 

@@ -21,7 +21,7 @@ SDL_Surface * Graphics::loadImage(const std::string & path)
 {
     if(!fileExists(path))
     {
-        throw "File not found at graphics level";
+        throw "Failed at finding image file '" + path + "'";
     }   
     if(!this->_spriteSheets.count(path))
     {

@@ -2,9 +2,10 @@
 
 #include <string>
 #include <fstream>
-#include <unistd.h>
 
 bool fileExists(const std::string & path)
 {
-    return ( access( path.c_str(), F_OK ) != -1 );
+    std::ifstream file;
+    file.open(path);
+    return file.good();
 }

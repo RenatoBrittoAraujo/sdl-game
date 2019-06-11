@@ -2,6 +2,7 @@
 #define GAME_HPP
 
 #include "player.hpp"
+#include "level.hpp"
 
 class Graphics;
 
@@ -16,6 +17,7 @@ private:
     void update(float time);
 
     Player _player;
+    Level _level;
 };
 
 #endif
