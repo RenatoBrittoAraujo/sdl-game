@@ -94,8 +94,3 @@ void AnimatedSprite::draw(Graphics & graphics, int x, int y)
         graphics.blitSurface(this->_spriteSheet, & sourceRect, & destination);
     }
 }
-
-void AnimatedSprite::animationDone(std::string currentAnimation)
-{
-
-}

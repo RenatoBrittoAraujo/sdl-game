@@ -6,7 +6,7 @@
 
 namespace player_contants
 {
-    const float WALK_SPEED = 0.01f;
+    const float WALK_SPEED = 0.1f;
 }
 
 Player::Player() {}
