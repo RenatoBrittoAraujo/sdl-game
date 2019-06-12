@@ -38,7 +38,7 @@ void AnimatedSprite::playAnimation(std::string animation, bool once)
 {
     if(!_animations.count(animation))
     {
-        throw "Failed at fiding animation type '" + animation + "'";
+        throw "Failed at fiding animation type | Class: AnimatedSprite";
     }
     this->_currentAnimationOnce = once;
     if(this->_currentAnimation != animation)
