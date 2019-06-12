@@ -11,6 +11,9 @@ class Game
 public:
     Game();
     ~Game();
+
+    static void enableVerbose();
+
 private:
     void gameLoop();
     void draw(Graphics & graphics);

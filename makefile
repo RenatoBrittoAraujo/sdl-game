@@ -27,3 +27,6 @@ clean:
 
 run:
 	./program
+
+runv:
+	./program -v

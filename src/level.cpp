@@ -1,8 +1,16 @@
-#include <SDL2/SDL.h>
 #include "level.hpp"
 #include "graphics.hpp"
 #include "globals.hpp"
+#include "tinyxml2.hpp"
+#include "helpers.hpp"
 
+#include <SDL2/SDL.h>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <sstream>
+
+using namespace tinyxml2;
 
 Level::Level() {}
 
@@ -18,9 +26,160 @@ Level::~Level() {}
 
 void Level::loadMap(std::string mapName, Graphics & graphics)
 {
-    this->_backgroundTexture = SDL_CreateTextureFromSurface(graphics.getRenderer(), 
-        graphics.loadImage("resources/background/bkBlue.png"));
-    this->_size = Vector2(1280, 960);
+    XMLDocument doc;
+    std::stringstream ss;
+    ss << "resources/maps/" << mapName << ".tmx";
+
+    if(!fileExists(ss.str()))
+    {
+        throw "Map not found";
+    }
+
+    doc.LoadFile(ss.str().c_str());
+
+    XMLElement * mapNode = doc.FirstChildElement("map");
+
+    int width, height;
+    mapNode->QueryAttribute("width", &width);
+    mapNode->QueryAttribute("height", &height);
+    this->_size = Vector2(width, height);
+
+    int tileWidth, tileHeight;
+    mapNode->QueryAttribute("tilewidth", &tileWidth);
+    mapNode->QueryAttribute("tileheight", &tileHeight);
+    this->_tileSize = Vector2(tileWidth, tileHeight);
+
+    contextPrint("Map loaded: " + ss.str());
+    contextPrint("width: " + std::to_string(width) + " | height: " + std::to_string(height));
+    contextPrint("tileWidth: " + std::to_string(tileWidth) + " | tileHeight: " + std::to_string(tileHeight));
+
+    XMLElement * pTileset = mapNode->FirstChildElement("tileset");
+    if(pTileset != NULL)
+    {
+        while(pTileset)
+        {
+            int firstgid;
+            const char * source = pTileset->Attribute("source");
+            char * path;
+            std::stringstream ss;
+            ss << "resources/maps/" << source;
+            pTileset->QueryIntAttribute("firstgid", &firstgid);
+            SDL_Texture * tex = SDL_CreateTextureFromSurface(graphics.getRenderer(), graphics.loadImage(ss.str()));
+            this->_tileSets.push_back(Tileset(tex, firstgid));
+            pTileset = pTileset->NextSiblingElement("tileset");
+        }
+    }
+    else
+    {
+        throw "Null tileset";
+    }
+    
+    XMLElement * player = mapNode->FirstChildElement("layer");
+    if(player != NULL)
+    {
+        while(player)
+        {
+            XMLElement * pData = player->FirstChildElement("data");
+            if(pData != NULL)
+            {
+                while(pData)
+                {
+                    XMLElement * pTile = pData->FirstChildElement("tile");
+                    if(pTile != NULL)
+                    {
+                        int tileCounter = 0;
+                        while(pTile)
+                        {
+                            int gid = pTile->IntAttribute("gid");
+                            
+                            if(gid == 0)
+                            {
+                                tileCounter++;
+                                if(pTile = pTile->NextSiblingElement("tile"))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            Tileset tls;
+
+                            for(int i = 0; i < this->_tileSets.size(); i++)
+                            {
+                                if(this->_tileSets[i]._firstGid <= gid)
+                                {
+                                    tls = this->_tileSets.at(i);
+                                    break;
+                                }
+                            }
+
+                            if(tls._firstGid == -1)
+                            {
+                                tileCounter++;
+                                if(pTile->NextSiblingElement("tile"))
+                                {
+                                    pTile = pTile->NextSiblingElement("tile");
+                                    continue;
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            int xx = 0;
+                            int yy = 0;
+
+                            xx = tileCounter % width;
+                            xx *= tileWidth;
+                            yy = tileCounter / width;
+                            yy *= tileHeight;
+
+                            Vector2 finalTilePosition = Vector2(xx, yy);
+                            
+                            int tilesetWidth, tilesetHeight;
+                            SDL_QueryTexture(tls._texture, NULL, NULL, &tilesetWidth, &tilesetHeight);
+                            int tsxx = gid % (tilesetWidth / tilesetHeight) - 1;
+                            tsxx *= tileWidth;
+                            int tsyy = 0;
+                            int omt = (gid / (tilesetWidth / tilesetHeight));
+                            tsyy = tileHeight * omt;
+
+                            Vector2 finalTilesetPosition = Vector2(tsxx, tsyy);
+                            Tile tile(tls._texture, Vector2(tileWidth, tileHeight), 
+                                finalTilesetPosition, finalTilePosition);
+
+
+
+                            this->_tileList.push_back(tile);
+                            tileCounter++;
+
+                            pTile = pTile->NextSiblingElement("tile");
+                        }
+                    }
+                    else
+                    {
+                        throw "Empty tile";
+                    }
+                    
+                    pData = pData->NextSiblingElement("data");
+                }
+            }
+            else
+            {
+                throw "Empty data on layer";
+            }
+            
+            player = player->NextSiblingElement("layer");
+        }
+    }
+    else
+    {
+        throw "Empty layers on map";
+    }
 }
 
 void Level::update(int timeElapsed)
@@ -30,17 +189,8 @@ void Level::update(int timeElapsed)
 
 void Level::draw(Graphics & graphics)
 {
-    SDL_Rect sourceRect = { 0, 0, 64, 64 };
-    SDL_Rect destRect;
-    destRect.w = 64 * globals::SPRITE_SCALE;
-    destRect.h = 64 * globals::SPRITE_SCALE;
-    for(int x = 0; x < this->_size.x / 64; x++)
+    for(Tile & tile : _tileList)
     {
-        for(int y = 0; y < this->_size.y / 64; y++)
-        {
-            destRect.x = x * 64 * globals::SPRITE_SCALE;
-            destRect.y = y * 64 * globals::SPRITE_SCALE;
-            graphics.blitSurface(this->_backgroundTexture, & sourceRect, & destRect);
-        }
+        tile.draw(graphics);
     }
 }

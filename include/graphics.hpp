@@ -1,9 +1,7 @@
 #ifndef GRAPHICS_HPP
 #define GRAPHICS_HPP
 
-struct SDL_Window;
-struct SDL_Renderer;
-
+#include <SDL2/SDL.h>
 #include <map>
 #include <string>
 

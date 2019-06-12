@@ -4,6 +4,7 @@
 #include "globals.hpp"
 #include "graphics.hpp"
 #include "tile.hpp"
+
 #include <SDL2/SDL.h>
 #include <string>
 #include <vector>
@@ -25,6 +26,7 @@ private:
     Vector2 _size;
     SDL_Texture * _backgroundTexture;
 
+    Vector2 _tileSize;
     std::vector<Tile> _tileList;
     std::vector<Tileset> _tileSets;
 

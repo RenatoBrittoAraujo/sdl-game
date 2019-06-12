@@ -6,6 +6,7 @@
 #include "graphics.hpp"
 #include "input.hpp"
 #include "player.hpp"
+#include "helpers.hpp"
 
 namespace {
     const int FPS = 50;
@@ -33,13 +34,12 @@ void Game::gameLoop()
     try {
 
         this->_player = Player(graphics, 100, 100);
-        this->_level = Level("map 1", Vector2(100, 100), graphics);
+        this->_level = Level("maptest", Vector2(100, 100), graphics);
 
         int LAST_UPDATE_TIME = SDL_GetTicks();
         while(true)
         {
             draw(graphics);
-            
             if(SDL_PollEvent(&event))
             {
                 if(event.type == SDL_QUIT)
@@ -87,14 +87,14 @@ void Game::gameLoop()
 
     } catch (const char * errorString) {
 
-        std::cout<<"[ERROR] " + (std::string) errorString<<std::endl<<"    Aborting..."<<std::endl;
+        errorPrint((std::string) errorString + "\n    Aborting...");
 
     }
 }
 
 // ORDER MATTERS ON DRAWING
 
-void Game::draw(Graphics &graphics)
+void Game::draw(Graphics & graphics)
 {
     graphics.clear();
     
@@ -108,4 +108,9 @@ void Game::update(float time)
 {
     this->_level.update(time);
     this->_player.update(time);
+}
+
+void Game::enableVerbose()
+{
+    setVerbose(true);
 }
