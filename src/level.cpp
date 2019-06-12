@@ -3,6 +3,7 @@
 #include "globals.hpp"
 #include "tinyxml2.hpp"
 #include "helpers.hpp"
+#include "rectangle.hpp"
 
 #include <SDL2/SDL.h>
 #include <vector>
@@ -178,6 +179,63 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
     {
         throw "Empty layers on map";
     }
+
+    bool cCollisionsPresent = false;
+
+    XMLElement * pObjectGroup = mapNode->FirstChildElement("objectgroup");
+    if(pObjectGroup != NULL)
+    {
+        while(pObjectGroup)
+        {
+            const char * name = pObjectGroup->Attribute("name");
+            std::stringstream ss;
+            ss << name;
+            if(ss.str() == "collisions")
+            {
+                cCollisionsPresent = true;
+
+                XMLElement * pObject = pObjectGroup->FirstChildElement("object");
+
+                if(pObject != NULL)
+                {
+                    while(pObject)
+                    {
+
+                        int x, y, width, height;
+
+                        x = pObject->FloatAttribute("x");
+                        y = pObject->FloatAttribute("y");
+                        width = pObject->FloatAttribute("width");
+                        height = pObject->FloatAttribute("height");
+
+                        Rectangle rect(
+                            std::ceil(x) * globals::SPRITE_SCALE,
+                            std::ceil(y) * globals::SPRITE_SCALE, 
+                            std::ceil(width) * globals::SPRITE_SCALE, 
+                            std::ceil(height) * globals::SPRITE_SCALE
+                        );
+
+                        this->_collisionRects.push_back(rect);
+
+                        pObject = pObject->NextSiblingElement("object");
+                    }
+                }
+                else
+                {
+                    throw "Null object on collisions";
+                }
+
+            }
+
+            pObjectGroup = pObjectGroup->NextSiblingElement("objectgroup");
+        }
+    }
+
+    if(!cCollisionsPresent)
+    {
+        throw "No collisions present on map";
+    }
+    
 }
 
 void Level::update(int timeElapsed)
@@ -191,4 +249,17 @@ void Level::draw(Graphics & graphics)
     {
         tile.draw(graphics);
     }
+}
+
+std::vector<Rectangle> Level::checkTileCollisions(const Rectangle & other)
+{
+    std::vector<Rectangle> collisions;
+    for(Rectangle & rectangle : this->_collisionRects)
+    {
+        if(rectangle.collidesWith(other))
+        {
+            collisions.push_back(other);
+        }
+    }
+    return collisions;
 }

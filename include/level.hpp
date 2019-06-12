@@ -4,6 +4,7 @@
 #include "globals.hpp"
 #include "graphics.hpp"
 #include "tile.hpp"
+#include "rectangle.hpp"
 
 #include <SDL2/SDL.h>
 #include <string>
@@ -20,6 +21,8 @@ public:
     void update(int elapsedTime);
     void draw(Graphics & graphics);
 
+    std::vector<Rectangle> checkTileCollisions(const Rectangle & other);
+
 private:
     std::string _mapName;
     Vector2 _spawnPoint;
@@ -29,6 +32,7 @@ private:
     Vector2 _tileSize;
     std::vector<Tile> _tileList;
     std::vector<Tileset> _tileSets;
+    std::vector<Rectangle> _collisionRects;
 
     void loadMap(std::string mapName, Graphics & graphics);
 };
