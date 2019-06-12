@@ -82,7 +82,7 @@ void Game::gameLoop()
 
             LAST_UPDATE_TIME = CURRENT_TIME;
 
-            usleep(1);
+            usleep(100);
         }
 
     } catch (const char * errorString) {

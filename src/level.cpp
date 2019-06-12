@@ -107,11 +107,11 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
 
                             Tileset tls;
 
-                            for(int i = 0; i < this->_tileSets.size(); i++)
+                            for(Tileset & tileset : this->_tileSets)
                             {
-                                if(this->_tileSets[i]._firstGid <= gid)
+                                if(tileset._firstGid <= gid)
                                 {
-                                    tls = this->_tileSets.at(i);
+                                    tls = tileset;
                                     break;
                                 }
                             }
@@ -130,8 +130,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                                 }
                             }
 
-                            int xx = 0;
-                            int yy = 0;
+                            int xx, yy;
 
                             xx = tileCounter % width;
                             xx *= tileWidth;
@@ -142,17 +141,16 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                             
                             int tilesetWidth, tilesetHeight;
                             SDL_QueryTexture(tls._texture, NULL, NULL, &tilesetWidth, &tilesetHeight);
-                            int tsxx = gid % (tilesetWidth / tilesetHeight) - 1;
+                                               
+                            int tsxx = gid % (tilesetWidth / tileWidth) - 1;
                             tsxx *= tileWidth;
                             int tsyy = 0;
-                            int omt = (gid / (tilesetWidth / tilesetHeight));
+                            int omt = (gid / (tilesetWidth / tileHeight));
                             tsyy = tileHeight * omt;
 
                             Vector2 finalTilesetPosition = Vector2(tsxx, tsyy);
                             Tile tile(tls._texture, Vector2(tileWidth, tileHeight), 
                                 finalTilesetPosition, finalTilePosition);
-
-
 
                             this->_tileList.push_back(tile);
                             tileCounter++;
