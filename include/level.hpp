@@ -3,8 +3,12 @@
 
 #include "globals.hpp"
 #include "graphics.hpp"
+#include "tile.hpp"
 #include <SDL2/SDL.h>
 #include <string>
+#include <vector>
+
+struct Tileset;
 
 class Level
 {
@@ -21,7 +25,24 @@ private:
     Vector2 _size;
     SDL_Texture * _backgroundTexture;
 
+    std::vector<Tile> _tileList;
+    std::vector<Tileset> _tileSets;
+
     void loadMap(std::string mapName, Graphics & graphics);
+};
+
+struct Tileset
+{
+    SDL_Texture * _texture;
+    int _firstGid;
+    Tileset()
+    {
+        this->_firstGid = -1;
+    }
+    Tileset(SDL_Texture * texture, int firstGid) :
+        _texture(texture),
+        _firstGid(firstGid)
+    {}
 };
 
 #endif
