@@ -2,6 +2,7 @@
 #include "graphics.hpp"
 #include "globals.hpp"
 #include <iostream>
+#include <algorithm>
 
 Sprite::Sprite() {}
 
@@ -20,6 +21,8 @@ Sprite::Sprite(Graphics & graphics, const std::string & path, int sourceX, int s
     {
         throw "Failed at creating surface texture from path | Class: Sprite";
     }
+
+    this->_boundingBox = Rectangle(sourceX, sourceY, width * globals::SPRITE_SCALE, height * globals::SPRITE_SCALE);
 }
 
 Sprite::~Sprite() {}
@@ -32,5 +35,30 @@ void Sprite::draw(Graphics & graphics, int x, int y)
 
 void Sprite::update()
 {
+    this->_boundingBox = Rectangle(this->_x, this->_y, 
+        this->_sourceRect.w * globals::SPRITE_SCALE, this->_sourceRect.h * globals::SPRITE_SCALE);
 
+
+
+}
+
+const Rectangle Sprite::getBoundingBox() const
+{
+    return _boundingBox;
+}
+
+const sides::Side Sprite::getCollisionSide(Rectangle & other) const
+{
+    int amtRight, amtLeft, amtTop, amtBottom;
+    amtRight = this->_boundingBox.getRight() - other.getLeft();
+    amtLeft = this->_boundingBox.getLeft() - other.getRight();
+    amtTop = this->_boundingBox.getTop() - other.getBottom();
+    amtBottom = this->_boundingBox.getBottom() - other.getTop();
+
+    std::pair<int, sides::Side> vals[4] = { {amtLeft, sides::LEFT}, 
+    {amtRight, sides::RIGHT}, {amtBottom, sides::BOTTOM}, {amtTop, sides::TOP} };
+    
+    std::sort(vals, vals + 4);
+
+    return  vals[0].second;
 }

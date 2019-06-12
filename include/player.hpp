@@ -23,6 +23,8 @@ public:
     const float getX() const;
     const float getY() const;
 
+    void handleTileCollisions(std::vector<Rectangle> & others);
+
 private:
     float _dx, _dy;
     Direction _facing;
