@@ -15,8 +15,6 @@ Tile::Tile(SDL_Texture * tileset, Vector2 size, Vector2 tilesetPosition, Vector2
 
 void Tile::update(int elapsedTime) {}
 
-#include "helpers.hpp"
-
 void Tile::draw(Graphics & graphics)
 {
     SDL_Rect dest = { (int) (this->_position.x * globals::SPRITE_SCALE), (int) (this->_position.y * globals::SPRITE_SCALE),

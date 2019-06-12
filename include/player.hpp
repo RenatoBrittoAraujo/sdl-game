@@ -20,9 +20,14 @@ public:
     void moveRight();
     void stopMoving();
 
+    const float getX() const;
+    const float getY() const;
+
 private:
     float _dx, _dy;
     Direction _facing;
+
+    bool _grounded;
 };
 
 #endif
