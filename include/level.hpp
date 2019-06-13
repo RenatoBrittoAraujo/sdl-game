@@ -5,6 +5,7 @@
 #include "graphics.hpp"
 #include "tile.hpp"
 #include "rectangle.hpp"
+#include "slopes.hpp"
 
 #include <SDL2/SDL.h>
 #include <string>
@@ -22,6 +23,7 @@ public:
     void draw(Graphics & graphics);
 
     std::vector<Rectangle> checkTileCollisions(const Rectangle & other);
+    std::vector<Slope> checkSlopeCollisions(const Rectangle & other);
 
     const Vector2 getPlayerSpawnPoint() const;
 
@@ -35,6 +37,7 @@ private:
     std::vector<Tile> _tileList;
     std::vector<Tileset> _tileSets;
     std::vector<Rectangle> _collisionRects;
+    std::vector<Slope> _collisionSlopes;
 
     void loadMap(std::string mapName, Graphics & graphics);
 };

@@ -82,10 +82,6 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
             pTileset = pTileset->NextSiblingElement("tileset");
         }
     }
-    else
-    {
-        throw "Null tileset | Class: level";
-    }
     
     XMLElement * player = mapNode->FirstChildElement("layer");
     if(player != NULL)
@@ -171,25 +167,11 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                             pTile = pTile->NextSiblingElement("tile");
                         }
                     }
-                    else
-                    {
-                        throw "Empty tile | Class: level";
-                    }
-                    
                     pData = pData->NextSiblingElement("data");
                 }
             }
-            else
-            {
-                throw "Empty data on layer | Class: level";
-            }
-            
             player = player->NextSiblingElement("layer");
         }
-    }
-    else
-    {
-        throw "Empty layers on map | Class: level";
     }
 
     bool cCollisionsPresent = false;
@@ -260,6 +242,74 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                             cSpawnPointPresent = true;
                             this->_spawnPoint = Vector2(std::ceil(x) * globals::SPRITE_SCALE,
                                 std::ceil(y) * globals::SPRITE_SCALE);
+                        }
+
+                        pObject = pObject->NextSiblingElement("object");
+                    }
+                }
+            }
+
+            if(objectGrouptype.str() == "slopes")
+            {
+                XMLElement * pObject = pObjectGroup->FirstChildElement("object");
+
+                if(pObject != NULL)
+                {
+                    while(pObject)
+                    {
+                        float x = pObject->FloatAttribute("x");
+                        float y = pObject->FloatAttribute("y");
+
+                        std::vector<Vector2> points;
+                        
+                        Vector2 p1(
+                            std::ceil(x),
+                            std::ceil(y)
+                        );
+
+                        XMLElement * pPolyline = pObject->FirstChildElement("polyline");
+
+                        if(pPolyline != NULL)
+                        {
+                            std::vector<std::string> pairs;
+                            const char * pointString = pPolyline->Attribute("points");
+
+
+                            std::stringstream ss;
+                            ss << pointString;
+
+                            for(std::string & pair : pairs)
+                            {
+
+                                std::vector<std::string> valsString;
+
+                                Util::debugPrint(valsString[0] + ' ' + valsString[1]);
+
+                                Util::split(pair, valsString, ',');
+
+
+
+                                points.push_back(Vector2(
+                                    std::stoi(valsString[0]),
+                                    std::stoi(valsString[1])
+                                ));
+                            }
+
+                            for(size_t i = 0; i < points.size(); i++)
+                            {
+                                this->_collisionSlopes.push_back(Slope(
+
+                                        Vector2((int) (p1.x + points.at(i < 2 ? i : i - 1).x) * globals::SPRITE_SCALE,
+                                            (int) (p1.y + points.at(i < 2 ? i : i - 1).y) * globals::SPRITE_SCALE),
+                                        
+                                        Vector2((int) (p1.x + points.at(i < 2 ? i + 1 : i).x) * globals::SPRITE_SCALE,
+                                            (int) (p1.y + points.at(i < 2 ? i + 1 : i).y) * globals::SPRITE_SCALE)
+
+                                ));
+                            }
+
+
+
                         }
 
                         pObject = pObject->NextSiblingElement("object");
