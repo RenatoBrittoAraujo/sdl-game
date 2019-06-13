@@ -258,7 +258,7 @@ std::vector<Rectangle> Level::checkTileCollisions(const Rectangle & other)
     {
         if(rectangle.collidesWith(other))
         {
-            collisions.push_back(other);
+            collisions.push_back(rectangle);
         }
     }
     return collisions;

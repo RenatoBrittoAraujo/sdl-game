@@ -37,7 +37,7 @@ void Game::gameLoop()
         this->_level = Level("maptest", Vector2(100, 100), graphics);
 
         int LAST_UPDATE_TIME = SDL_GetTicks();
-        while(true)
+        while(_gameRunning)
         {
             draw(graphics);
             if(SDL_PollEvent(&event))
@@ -108,6 +108,13 @@ void Game::update(float time)
 {
     this->_level.update(time);
     this->_player.update(time);
+
+    std::vector<Rectangle> others;
+    if((others = this->_level.checkTileCollisions(this->_player.getBoundingBox())).size() > 0)
+    {
+        this->_player.handleTileCollisions(others);
+        // _gameRunning = false;
+    }
 }
 
 void Game::enableVerbose()

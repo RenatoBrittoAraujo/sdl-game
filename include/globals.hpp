@@ -1,6 +1,8 @@
 #ifndef GLOBALS_HPP
 #define GLOBALS_HPP
 
+#include <string>
+
 namespace globals
 {
     const int SCREEN_WIDTH = 640;
@@ -27,6 +29,16 @@ namespace sides
             side == LEFT ? RIGHT : 
             side == RIGHT ? LEFT :
             NONE;
+    }
+
+    const inline std::string getCollisionSideString(Side side)
+    {
+        return std::string(
+            side == LEFT ? "LEFT" :
+            side == RIGHT ? "RIGHT":
+            side == TOP ? "TOP"  :
+            side == BOTTOM ? "BOTTOM" :
+            "NONE");
     }
 };
 

@@ -1,13 +1,14 @@
 #include <SDL2/SDL.h>
 #include "graphics.hpp"
+#include "helpers.hpp"
 #include "player.hpp"
 
 #include <string>
 
 namespace player_constants
 {
-    const float WALK_SPEED = 0.2f;
-    const float GRAVITY = 0.001f;
+    const float WALK_SPEED = 0.05f;
+    const float GRAVITY = 0.0002f;
     const float GRAVITY_CAP = 0.8f;
 }
 
@@ -42,10 +43,8 @@ void Player::update(float elapsedTime)
 {
     if(this->_dy <= player_constants::GRAVITY_CAP)
     {
-        this->_dy += player_constants::GRAVITY * elapsedTime;
-        
+        this->_dy += player_constants::GRAVITY * elapsedTime;   
     }
-
     this->_x += this->_dx;
     this->_y += this->_dy;
 
@@ -85,4 +84,36 @@ const float Player::getX() const
 const float Player::getY() const 
 {
     return this->_x;
+}
+
+void Player::handleTileCollisions(std::vector<Rectangle> &others)
+{
+    
+	for (int i = 0; i < others.size(); i++)
+    {
+		sides::Side collisionSide = Sprite::getCollisionSide(others.at(i));
+        
+		if (collisionSide != sides::NONE)
+        {
+			switch (collisionSide) {
+			case sides::TOP:
+				this->_dy = 0;
+				this->_y = others.at(i).getBottom() + 1;
+				break;
+			case sides::BOTTOM:
+				this->_y = others.at(i).getTop() - this->_boundingBox.getHeight() - 1;
+				this->_dy = 0;
+				this->_grounded = true;
+				break;
+			case sides::LEFT:
+				this->_x = others.at(i).getRight() + 1;
+				break;
+			case sides::RIGHT:
+				this->_x = others.at(i).getLeft() - this->_boundingBox.getWidth() - 1;
+				break;
+			}
+
+		}
+    
+	}
 }

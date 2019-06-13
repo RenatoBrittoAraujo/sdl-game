@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" tiledversion="2017.07.26" orientation="orthogonal" renderorder="right-down" width="20" height="16" tilewidth="16" tileheight="16" nextobjectid="12">
- <tileset firstgid="1" source="untitled.tsx"/>
- <layer name="background" width="20" height="16">
+ <tileset firstgid="1" source="PrtCave.png"/>
+ <layer name="background" width="20" height="16" visible="0">
   <data>
    <tile gid="1"/>
    <tile gid="1"/>
@@ -335,7 +335,7 @@
   <object id="8" x="16.5" y="208" width="287.5" height="14"/>
   <object id="9" x="304.5" y="169.5" width="13" height="41.5"/>
  </objectgroup>
- <layer name="foreground" width="20" height="16">
+ <layer name="foreground" width="20" height="16" visible="0">
   <data>
    <tile gid="0"/>
    <tile gid="0"/>
