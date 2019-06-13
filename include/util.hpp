@@ -14,7 +14,6 @@ public:
     static const void errorPrint(const std::string message);
 
     static const void setVerbose(bool verbose);
-
 };
 
 #endif
