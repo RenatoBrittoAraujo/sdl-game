@@ -9,6 +9,7 @@ namespace globals
     const int SCREEN_HEIGHT = 480;
 
     const float SPRITE_SCALE = 2.0f;
+    static bool _verbose = false;
 }  
 
 namespace sides

@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include "graphics.hpp"
-#include "helpers.hpp"
 #include "player.hpp"
 
 #include <string>
@@ -21,7 +20,6 @@ Player::Player(Graphics & graphics, Vector2 spawnPoint) :
     _facing(RIGHT),
     _grounded(false)
 {
-    debugPrint("SPAWN POINT X: " + std::to_string(spawnPoint.x) + " Y: " + std::to_string(spawnPoint.y));
     graphics.loadImage("resources/char.png");
     this->setupAnimation();
     this->playAnimation("RunRight");

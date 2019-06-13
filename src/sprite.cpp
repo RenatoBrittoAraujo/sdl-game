@@ -42,7 +42,7 @@ const Rectangle Sprite::getBoundingBox() const
 {
     return this->_boundingBox;
 }
-#include "helpers.hpp"
+
 const sides::Side Sprite::getCollisionSide(Rectangle & other) const
 {
 	int amtRight, amtLeft, amtTop, amtBottom;

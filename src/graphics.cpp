@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "graphics.hpp"
-#include "helpers.hpp"
+#include "util.hpp"
 #include "globals.hpp"
 
 #define GAME_NAME "Prototyper"
@@ -20,7 +20,7 @@ Graphics::~Graphics()
 
 SDL_Surface * Graphics::loadImage(const std::string & path)
 {
-    if(!fileExists(path))
+    if(!Util::fileExists(path))
     {
         throw "Failed at finding image file | Class: Graphics";
     }   

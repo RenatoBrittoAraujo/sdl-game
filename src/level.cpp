@@ -2,7 +2,7 @@
 #include "graphics.hpp"
 #include "globals.hpp"
 #include "tinyxml2.hpp"
-#include "helpers.hpp"
+#include "util.hpp"
 #include "rectangle.hpp"
 
 #include <SDL2/SDL.h>
@@ -30,7 +30,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
     std::stringstream ss;
     ss << "resources/maps/" << mapName << ".tmx";
 
-    if(!fileExists(ss.str()))
+    if(!Util::fileExists(ss.str()))
     {
         throw "Map not found | Class: level";
     }
@@ -49,9 +49,9 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
     mapNode->QueryAttribute("tileheight", &tileHeight);
     this->_tileSize = Vector2(tileWidth, tileHeight);
 
-    contextPrint("Map loaded: " + ss.str());
-    contextPrint("width: " + std::to_string(width) + " | height: " + std::to_string(height));
-    contextPrint("tileWidth: " + std::to_string(tileWidth) + " | tileHeight: " + std::to_string(tileHeight));
+    Util::contextPrint("Map loaded: " + ss.str());
+    Util::contextPrint("width: " + std::to_string(width) + " | height: " + std::to_string(height));
+    Util::contextPrint("tileWidth: " + std::to_string(tileWidth) + " | tileHeight: " + std::to_string(tileHeight));
 
     XMLElement * pTileset = mapNode->FirstChildElement("tileset");
     if(pTileset != NULL)
@@ -66,7 +66,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
 
             std::string tilesetPath = ss.str();
 
-            if(!fileExists(tilesetPath))
+            if(!Util::fileExists(tilesetPath))
             {
                 throw "Tileset .png not found | Class: level";
             }

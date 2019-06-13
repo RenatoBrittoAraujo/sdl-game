@@ -6,7 +6,7 @@
 #include "graphics.hpp"
 #include "input.hpp"
 #include "player.hpp"
-#include "helpers.hpp"
+#include "util.hpp"
 
 namespace {
     const int FPS = 50;
@@ -87,7 +87,7 @@ void Game::gameLoop()
 
     } catch (const char * errorString) {
 
-        errorPrint((std::string) errorString + "\n    Aborting...");
+        Util::errorPrint((std::string) errorString + "\n    Aborting...");
 
     }
 }
@@ -119,5 +119,5 @@ void Game::update(float time)
 
 void Game::enableVerbose()
 {
-    setVerbose(true);
+    Util::setVerbose(true);
 }
