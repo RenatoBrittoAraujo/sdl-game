@@ -16,12 +16,14 @@ class Level
 {
 public:
     Level();
-    Level(std::string mapName, Vector2 spawnPoint, Graphics & graphics);
+    Level(std::string mapName, Graphics & graphics);
     ~Level();
     void update(int elapsedTime);
     void draw(Graphics & graphics);
 
     std::vector<Rectangle> checkTileCollisions(const Rectangle & other);
+
+    const Vector2 getPlayerSpawnPoint() const;
 
 private:
     std::string _mapName;

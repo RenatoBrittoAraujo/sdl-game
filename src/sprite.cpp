@@ -54,6 +54,7 @@ const sides::Side Sprite::getCollisionSide(Rectangle & other) const
 
 	int vals[4] = { abs(amtRight), abs(amtLeft), abs(amtTop), abs(amtBottom) };
 	int lowest = vals[0];
+    
 	for (int i = 0; i < 4; i++) {
 		if (vals[i] < lowest) {
 			lowest = vals[i];

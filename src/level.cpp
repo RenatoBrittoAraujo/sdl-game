@@ -15,9 +15,8 @@ using namespace tinyxml2;
 
 Level::Level() {}
 
-Level::Level(std::string mapName, Vector2 spawnPoint, Graphics & graphics) :
+Level::Level(std::string mapName, Graphics & graphics) :
     _mapName(mapName),
-    _spawnPoint(spawnPoint),
     _size(Vector2(0,0))
 {
     this->loadMap(mapName, graphics);
@@ -33,7 +32,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
 
     if(!fileExists(ss.str()))
     {
-        throw "Map not found";
+        throw "Map not found | Class: level";
     }
 
     doc.LoadFile(ss.str().c_str());
@@ -64,15 +63,28 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
             char * path;
             std::stringstream ss;
             ss << "resources/maps/" << source;
+
+            std::string tilesetPath = ss.str();
+
+            if(!fileExists(tilesetPath))
+            {
+                throw "Tileset .png not found | Class: level";
+            }
+
+            if(tilesetPath.size() < 5 or tilesetPath.substr(tilesetPath.size() - 4) != ".png")
+            {
+                throw "Tileset has invalid file type, should be .png | Class: level";
+            }
+
             pTileset->QueryIntAttribute("firstgid", &firstgid);
-            SDL_Texture * tex = SDL_CreateTextureFromSurface(graphics.getRenderer(), graphics.loadImage(ss.str()));
+            SDL_Texture * tex = SDL_CreateTextureFromSurface(graphics.getRenderer(), graphics.loadImage(tilesetPath));
             this->_tileSets.push_back(Tileset(tex, firstgid));
             pTileset = pTileset->NextSiblingElement("tileset");
         }
     }
     else
     {
-        throw "Null tileset";
+        throw "Null tileset | Class: level";
     }
     
     XMLElement * player = mapNode->FirstChildElement("layer");
@@ -161,7 +173,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                     }
                     else
                     {
-                        throw "Empty tile";
+                        throw "Empty tile | Class: level";
                     }
                     
                     pData = pData->NextSiblingElement("data");
@@ -169,7 +181,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
             }
             else
             {
-                throw "Empty data on layer";
+                throw "Empty data on layer | Class: level";
             }
             
             player = player->NextSiblingElement("layer");
@@ -177,10 +189,11 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
     }
     else
     {
-        throw "Empty layers on map";
+        throw "Empty layers on map | Class: level";
     }
 
     bool cCollisionsPresent = false;
+    bool cSpawnPointPresent = false;
 
     XMLElement * pObjectGroup = mapNode->FirstChildElement("objectgroup");
     if(pObjectGroup != NULL)
@@ -188,9 +201,10 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
         while(pObjectGroup)
         {
             const char * name = pObjectGroup->Attribute("name");
-            std::stringstream ss;
-            ss << name;
-            if(ss.str() == "collisions")
+            std::stringstream objectGrouptype;
+            objectGrouptype << name;
+
+            if(objectGrouptype.str() == "collisions")
             {
                 cCollisionsPresent = true;
 
@@ -222,9 +236,35 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                 }
                 else
                 {
-                    throw "Null object on collisions";
+                    throw "Null object on collisions | Class: level";
                 }
+            } 
+            
+            if(objectGrouptype.str() == "spawn_points")
+            {
+                XMLElement * pObject = pObjectGroup->FirstChildElement("object");
 
+                if(pObject != NULL)
+                {
+                    while(pObject)
+                    {
+                        float x = pObject->FloatAttribute("x");
+                        float y = pObject->FloatAttribute("y");
+                        const char * name = pObject->Attribute("name");
+
+                        std::stringstream ss;
+                        ss << name;
+
+                        if(ss.str() == "player")
+                        {
+                            cSpawnPointPresent = true;
+                            this->_spawnPoint = Vector2(std::ceil(x) * globals::SPRITE_SCALE,
+                                std::ceil(y) * globals::SPRITE_SCALE);
+                        }
+
+                        pObject = pObject->NextSiblingElement("object");
+                    }
+                }
             }
 
             pObjectGroup = pObjectGroup->NextSiblingElement("objectgroup");
@@ -233,7 +273,12 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
 
     if(!cCollisionsPresent)
     {
-        throw "No collisions present on map";
+        throw "No collisions present on map | Class: level";
+    }
+
+    if(!cSpawnPointPresent)
+    {
+        throw "No spawn points present on map | Class: level";
     }
     
 }
@@ -262,4 +307,9 @@ std::vector<Rectangle> Level::checkTileCollisions(const Rectangle & other)
         }
     }
     return collisions;
+}
+
+const Vector2 Level::getPlayerSpawnPoint() const
+{
+    return this->_spawnPoint;
 }

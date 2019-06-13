@@ -33,8 +33,8 @@ void Game::gameLoop()
 
     try {
 
-        this->_player = Player(graphics, 100, 100);
-        this->_level = Level("maptest", Vector2(100, 100), graphics);
+        this->_level = Level("maptest", graphics);
+        this->_player = Player(graphics, this->_level.getPlayerSpawnPoint());
 
         int LAST_UPDATE_TIME = SDL_GetTicks();
         while(_gameRunning)
