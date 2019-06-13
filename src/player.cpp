@@ -1,14 +1,16 @@
 #include <SDL2/SDL.h>
 #include "graphics.hpp"
 #include "player.hpp"
+#include "slopes.hpp"
 
 #include <string>
 
 namespace player_constants
 {
-    const float WALK_SPEED = 0.05f;
-    const float GRAVITY = 0.0002f;
-    const float GRAVITY_CAP = 0.8f;
+    const float WALK_SPEED = 0.6f;
+    const float GRAVITY = 0.009f;
+    const float GRAVITY_CAP = 5.0f;
+    const float JUMP_SPEED = 1.8f;
 }
 
 Player::Player() {}
@@ -42,7 +44,7 @@ void Player::update(float elapsedTime)
 {
     if(this->_dy <= player_constants::GRAVITY_CAP)
     {
-        this->_dy += player_constants::GRAVITY * elapsedTime;   
+        this->_dy += player_constants::GRAVITY * elapsedTime;
     }
     this->_x += this->_dx;
     this->_y += this->_dy;
@@ -85,10 +87,9 @@ const float Player::getY() const
     return this->_x;
 }
 
-void Player::handleTileCollisions(std::vector<Rectangle> &others)
+void Player::handleTileCollisions(std::vector<Rectangle> & collisionRects)
 {
-    
-	for(auto rectangle : others)
+	for(auto rectangle : collisionRects)
     {
 		sides::Side collisionSide = Sprite::getCollisionSide(rectangle);
 
@@ -96,6 +97,11 @@ void Player::handleTileCollisions(std::vector<Rectangle> &others)
         case sides::TOP:
             this->_dy = 0;
             this->_y = rectangle.getBottom() + 1;
+            if(this->_grounded)
+            {
+                this->_dx = 0;
+                this->_x -= this->_facing == RIGHT ? 1.0f : -1.0f;
+            }
             break;
         case sides::BOTTOM:
             this->_y = rectangle.getTop() - this->_boundingBox.getHeight() - 1;
@@ -111,8 +117,34 @@ void Player::handleTileCollisions(std::vector<Rectangle> &others)
         default:
             throw "Invalid collision type | Class: player";
             break;
-
 		}
-    
 	}
+}
+
+void Player::handleSlopeCollisions(std::vector<Slope> & slopes)
+{
+    for(Slope & slope : slopes)
+    {
+        if(!slope.collidesWith(this->getBoundingBox()))
+            continue;
+        int b = (slope.getP1().y - (slope.getSlope() * fabs(slope.getP1().x)));
+        int centerX = this->_boundingBox.getCenterX();
+
+        // This magic number fixes incorrect calculations on slope collisions and is to be removed
+
+        int newY = (slope.getSlope() * centerX) + b - 8;
+        if(this->_grounded)
+        {
+            this->_y = newY - this->_boundingBox.getHeight();
+        }
+    }
+}
+
+void Player::jump()
+{
+    if(this->_grounded)
+    {
+        this->_dy = -player_constants::JUMP_SPEED;
+        this->_grounded = false;
+    }
 }

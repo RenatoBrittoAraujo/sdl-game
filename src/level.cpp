@@ -4,6 +4,7 @@
 #include "tinyxml2.hpp"
 #include "util.hpp"
 #include "rectangle.hpp"
+#include "slopes.hpp"
 
 #include <SDL2/SDL.h>
 #include <vector>
@@ -59,7 +60,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
         while(pTileset)
         {
             int firstgid;
-            const char * source = pTileset->Attribute("source");
+            const char * source = pTileset->Attribute("name");
             char * path;
             std::stringstream ss;
             ss << "resources/maps/" << source;
@@ -274,20 +275,16 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                             std::vector<std::string> pairs;
                             const char * pointString = pPolyline->Attribute("points");
 
-
                             std::stringstream ss;
                             ss << pointString;
 
+                            Util::split(ss.str(), pairs, ' ');
+
                             for(std::string & pair : pairs)
                             {
-
                                 std::vector<std::string> valsString;
 
-                                Util::debugPrint(valsString[0] + ' ' + valsString[1]);
-
                                 Util::split(pair, valsString, ',');
-
-
 
                                 points.push_back(Vector2(
                                     std::stoi(valsString[0]),
@@ -295,7 +292,7 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                                 ));
                             }
 
-                            for(size_t i = 0; i < points.size(); i++)
+                            for(size_t i = 0; i < points.size(); i += 2)
                             {
                                 this->_collisionSlopes.push_back(Slope(
 
@@ -304,12 +301,8 @@ void Level::loadMap(std::string mapName, Graphics & graphics)
                                         
                                         Vector2((int) (p1.x + points.at(i < 2 ? i + 1 : i).x) * globals::SPRITE_SCALE,
                                             (int) (p1.y + points.at(i < 2 ? i + 1 : i).y) * globals::SPRITE_SCALE)
-
                                 ));
                             }
-
-
-
                         }
 
                         pObject = pObject->NextSiblingElement("object");
@@ -346,14 +339,27 @@ void Level::draw(Graphics & graphics)
     }
 }
 
-std::vector<Rectangle> Level::checkTileCollisions(const Rectangle & other)
+std::vector<Rectangle> Level::checkTileCollisions(const Rectangle & movingRect)
 {
     std::vector<Rectangle> collisions;
     for(Rectangle & rectangle : this->_collisionRects)
     {
-        if(rectangle.collidesWith(other))
+        if(rectangle.collidesWith(movingRect))
         {
             collisions.push_back(rectangle);
+        }
+    }
+    return collisions;
+}
+
+std::vector<Slope> Level::checkSlopeCollisions(const Rectangle & movingRect)
+{
+    std::vector<Slope> collisions;
+    for(auto slope : _collisionSlopes)
+    {
+        if(slope.collidesWith(movingRect))
+        {
+            collisions.push_back(slope);
         }
     }
     return collisions;

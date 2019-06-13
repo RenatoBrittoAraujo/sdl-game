@@ -2,6 +2,9 @@
 #define PLAYER_H
 
 #include "animatedSprite.hpp"
+#include "slopes.hpp"
+#include "rectangle.hpp"
+
 class Graphics;
 
 
@@ -23,7 +26,10 @@ public:
     const float getX() const;
     const float getY() const;
 
-    void handleTileCollisions(std::vector<Rectangle> & others);
+    void handleTileCollisions(std::vector<Rectangle> & tiles);
+    void handleSlopeCollisions(std::vector<Slope> & slopes);
+
+    void jump();
 
 private:
 

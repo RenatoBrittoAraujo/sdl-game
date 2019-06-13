@@ -45,7 +45,7 @@ unsigned int Util::split(const std::string & text, std::vector<std::string> & st
 
     while(pos != std::string::npos)
     {
-        strings.push_back(text.substr(initialPos, pos - initialPos + 1));
+        strings.push_back(text.substr(initialPos, pos - initialPos));
         initialPos = pos + 1;
         pos = text.find(ch, initialPos);
     }

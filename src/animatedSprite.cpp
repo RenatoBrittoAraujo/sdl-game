@@ -57,6 +57,7 @@ void AnimatedSprite::setVisible(bool visible)
 void AnimatedSprite::stopAnimation()
 {
     this->_frameIndex = 0;
+    this->animationDone(this->_currentAnimation);
 }
 
 void AnimatedSprite::update(int elapsedTime)
@@ -76,7 +77,7 @@ void AnimatedSprite::update(int elapsedTime)
             {
                 this->setVisible(false);
             }
-            this->_frameIndex = 0;
+            this->stopAnimation();
         }   
     }
 }

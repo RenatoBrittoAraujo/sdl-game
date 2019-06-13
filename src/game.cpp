@@ -1,16 +1,16 @@
 #include <SDL2/SDL.h>
 #include <iostream>
-#include <unistd.h>
 
 #include "game.hpp"
 #include "graphics.hpp"
 #include "input.hpp"
 #include "player.hpp"
 #include "util.hpp"
+#include "slopes.hpp"
 
 namespace {
-    const int FPS = 50;
-    const int MAX_FRAME_TIME = 5 * 1000 / FPS;
+    const int FPS = 1000;
+    const int MAX_FRAME_TIME = 1000 / FPS;
 }
 
 Game::Game()
@@ -69,6 +69,11 @@ void Game::gameLoop()
                 this->_player.moveRight();
             }
             
+            if(input.isKeyHeld(SDL_SCANCODE_SPACE))
+            {
+                this->_player.jump();
+            }
+            
             if(!input.isKeyHeld(SDL_SCANCODE_RIGHT) and !input.isKeyHeld(SDL_SCANCODE_LEFT))
             {
                 this->_player.stopMoving();
@@ -82,7 +87,7 @@ void Game::gameLoop()
 
             LAST_UPDATE_TIME = CURRENT_TIME;
 
-            usleep(5);
+            SDL_Delay(1000 / FPS);
         }
 
     } catch (const char * errorString) {
@@ -109,11 +114,17 @@ void Game::update(float time)
     this->_level.update(time);
     this->_player.update(time);
 
-    std::vector<Rectangle> others;
-    if((others = this->_level.checkTileCollisions(this->_player.getBoundingBox())).size() > 0)
+    std::vector<Rectangle> collisionRectangles;
+    if((collisionRectangles = this->_level.checkTileCollisions(this->_player.getBoundingBox())).size() > 0)
     {
-        this->_player.handleTileCollisions(others);
+        this->_player.handleTileCollisions(collisionRectangles);
         // _gameRunning = false;
+    }
+
+    std::vector<Slope> slopes;
+    if((slopes = this->_level.checkSlopeCollisions(this->_player.getBoundingBox())).size() > 0)
+    {
+        this->_player.handleSlopeCollisions(slopes);
     }
 }
 
